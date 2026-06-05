@@ -1377,9 +1377,8 @@
     }
 
     function toggleSubmitButton() {
-      const hasKey = apiKeyInput.value.trim().length > 0;
       const hasQuery = queryInput.value.trim().length > 0;
-      submitBtn.disabled = !hasKey || hasQuery === 0 || isGenerating;
+      submitBtn.disabled = hasQuery === 0 || isGenerating;
     }
 
     function updateKeyStatus(key) {
@@ -1543,10 +1542,16 @@
 
     // Submit Query and initiate Streaming
     async function submitQuery() {
-      const key = apiKeyInput.value.trim();
       const query = queryInput.value.trim();
-      
-      if (!key || !query || isGenerating) return;
+      if (!query || isGenerating) return;
+
+      const key = apiKeyInput.value.trim();
+      if (!key) {
+        settingsModal.classList.add("active");
+        apiKeyInput.focus();
+        alert("Please set your GOOGLE API KEY first in the configuration modal that has been opened.");
+        return;
+      }
 
       isGenerating = true;
       toggleSubmitButton();
