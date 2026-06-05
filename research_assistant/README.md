@@ -1,17 +1,17 @@
 # AI Research Assistant: Autonomous RAG & Multi-Agent Co-Pilot
 
-> An enterprise-grade, high-performance RAG pipeline and multi-agent system designed to automate academic synthesis, facts validation, and citation parsing.
+> An enterprise-grade, high-performance RAG pipeline and multi-agent system designed to automate academic synthesis, facts validation, and citation parsing, powered by **Google Gemini 2.5 Flash** and featuring a beautiful dark-themed web dashboard.
 
 ---
 
 ## System Architecture
 
-The project features a **two-stage retrieval pipeline** integrated with a **multi-agent orchestration team** powered by Claude 3.5 Sonnet and GPT-4o.
+The project features a **two-stage retrieval pipeline** integrated with a **multi-agent orchestration team** powered by Gemini 2.5 Flash.
 
 ```
 +-------------------------------------------------------------+
 |                     USER INTERFACE LAYER                    |
-|                        FastAPI / REST                       |
+|                FastAPI Backend / web UI Dashboard           |
 +------------------------------+------------------------------+
                                |
             ┌──────────────────┴──────────────────┐
@@ -30,13 +30,13 @@ The project features a **two-stage retrieval pipeline** integrated with a **mult
 |                                                             |
 |   +-----------------------+     +-----------------------+   |
 |   |     ResearchAgent     | --> |   FactCheckerAgent    |   |
-|   |  (Claude 3.5 Sonnet)  |     |       (GPT-4o)        |   |
+|   |  (Gemini 2.5 Flash)   |     |  (Gemini 2.5 Flash)   |   |
 |   +-----------+-----------+     +-----------+-----------+   |
 |               |                             |               |
 |               ▼ (Web/KB Tools)              ▼               |
 |   +-----------+-----------+     +-----------+-----------+   |
 |   |      Tool Layer       |     |     CitationAgent     |   |
-|   |  - Web Search (Tavily)|     |       (GPT-4o)        |   |
+|   |  - Web Search (Tavily)|     |  (Gemini 2.5 Flash)   |   |
 |   +-----------------------+     +-----------+-----------+   |
 |                                             |               |
 |                                             ▼               |
@@ -49,56 +49,69 @@ The project features a **two-stage retrieval pipeline** integrated with a **mult
 
 ---
 
+## Key Features
+
+1. **Google Gemini LLM Backbone**: Completely migrated from legacy OpenAI/Anthropic APIs to use **Gemini 2.5 Flash** for reasoning, synthesis, citation formatting, and multi-agent coordination.
+2. **Beautiful Dark-Mode Web UI**: High-fidelity dark theme with glassmorphism, real-time response streaming, visual confidence score meters, metadata/source viewers, and integrated API key configuration (safely stored locally in the browser).
+3. **Advanced Retrieval System**: 
+   - Core embedding using Sentence-Transformers (`all-MiniLM-L6-v2`).
+   - Pinecone serverless integration for indexing and vector similarity search.
+   - Cross-encoder reranking (using `cross-encoder/ms-marco-MiniLM-L-6-v2`) to prioritize the top 3 most relevant source text blocks.
+4. **Resilient Architecture for Windows**: Special preemptive import structure resolving the binary DLL access violations (`0xC0000005`) that typically crash PyTorch/sentence_transformers when imported alongside Pinecone/PyMuPDF on Windows platforms.
+
+---
+
 ## Directory Structure
 
 ```
 research_assistant/
 ├── app/
-│   ├── __init__.py
-│   ├── main.py
+│   ├── __init__.py          # Preemptive sentence_transformers setup for Windows
+│   ├── main.py              # FastAPI server entry point
 │   ├── api/
-│   │   ├── routes.py
-│   │   └── schemas.py
+│   │   ├── routes.py        # API endpoints (ingest URL, ingest PDF, research query)
+│   │   └── schemas.py       # Pydantic request/response models
 │   ├── core/
-│   │   ├── ingestion.py
-│   │   ├── retrieval.py
-│   │   ├── agent.py
-│   │   └── crew.py
+│   │   ├── agent.py         # ResearchReActAgent using Gemini 2.5 Flash
+│   │   ├── crew.py          # CrewAI agents (Researcher, Fact Checker, Citation Specialist)
+│   │   ├── ingestion.py     # Crawling (BeautifulSoup) and loading (PyMuPDF)
+│   │   └── retrieval.py     # Pinecone vector querying & MiniLM reranking
 │   ├── tools/
-│   │   ├── web_search.py
-│   │   └── citation.py
+│   │   ├── citation.py      # Regex parser for inline bracket citations and confidence estimator
+│   │   └── web_search.py    # Tavily API web search tool wrapper
 │   └── utils/
-│       ├── embeddings.py
-│       └── chunker.py
+│       ├── embeddings.py    # MiniLM embeddings layer helper
+│       └── chunker.py       # Clean whitespace chunker
 ├── tests/
-│   ├── test_ingestion.py
-│   ├── test_retrieval.py
-│   └── test_agent.py
+│   ├── conftest.py          # Pytest hooks for early imports on Windows
+│   ├── test_agent.py        # Unit tests for ReAct agents & citation formatting
+│   ├── test_ingestion.py    # Unit tests for scrapers & chunkers
+│   └── test_retrieval.py    # Unit tests for vector indexing & reranking
 ├── notebooks/
-│   └── demo.ipynb
-├── requirements.txt
-├── .env.example
-├── Dockerfile
-└── README.md
+│   └── demo.ipynb           # Interactive pipeline demonstration
+├── index.html               # Premium Web UI Dashboard
+├── test_runner.py           # Safe command-line test runner
+├── requirements.txt         # Project dependencies
+├── .env.example             # Template for API keys
+└── README.md                # System documentation
 ```
 
 ---
 
 ## Configuration Reference
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the `research_assistant` root directory using the `.env.example` structure:
 
 ```env
-# Core API Keys
-OPENAI_API_KEY=your_openai_key_here
-ANTHROPIC_API_KEY=your_anthropic_key_here
+# Core LLM Key
+GOOGLE_API_KEY=your_gemini_api_key_here
 
-# Vector DB Configuration
-PINECONE_API_KEY=your_pinecone_key_here
+# Vector Database Configuration
+PINECONE_API_KEY=your_pinecone_api_key_here
 PINECONE_INDEX_NAME=research-assistant
 
-# Web Search Integration
-TAVILY_API_KEY=your_tavily_key_here
+# Web Search API Configuration
+TAVILY_API_KEY=your_tavily_api_key_here
 
 # Server Settings
 PORT=8000
@@ -112,25 +125,35 @@ LOG_LEVEL=info
 
 ### 1. Local Setup
 ```bash
+# Navigate to the research_assistant folder
+cd research_assistant
+
 # Create virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install requirements
 pip install -r requirements.txt
+```
 
-# Start FastAPI locally
+### 2. Start the Backend Server
+```bash
 python -m app.main
 ```
-The server will start at `http://localhost:8000`. Documentation will be available at `http://localhost:8000/docs`.
+The FastAPI backend will start at `http://127.0.0.1:8000`. You can explore the interactive OpenAPI docs at `http://127.0.0.1:8000/docs`.
 
-### 2. Run Tests
+### 3. Launch the Web UI
+Since the user interface is self-contained in a premium `index.html` file:
+* **Option A**: Double-click `index.html` to open it directly in any modern browser.
+* **Option B**: Use any static web server (e.g. `python -m http.server 3000` or Live Server extension).
+
+Configure your Gemini API key in the UI settings panel. The key is securely preserved in your browser's local storage and used directly for real-time streaming connections.
+
+### 4. Running the Tests
+To run all verification suites safely:
 ```bash
-pytest tests/
+python -m pytest
 ```
-
-### 3. Interactive Notebook
-Launch Jupyter Notebook and open [demo.ipynb](file:///c:/Users/chibb/OneDrive/Desktop/My%20Projects/AI%20ASSISTANT/research_assistant/notebooks/demo.ipynb) to walk through the pipeline step-by-step.
 
 ---
 
@@ -138,81 +161,35 @@ Launch Jupyter Notebook and open [demo.ipynb](file:///c:/Users/chibb/OneDrive/De
 
 ### 1. Ingest URL
 * **Endpoint**: `POST /api/v1/ingest/url`
-* **Request**:
-```bash
-curl -X POST "http://localhost:8000/api/v1/ingest/url" \
-     -H "Content-Type: application/json" \
-     -d '{"url": "https://nature.com/articles/s41586-024-07487-w"}'
-```
-* **Response**:
+* **Request Body**:
 ```json
 {
-  "status": "success",
-  "message": "Web content from 'https://nature.com/...' crawled and indexed successfully.",
-  "chunks_count": 14
+  "url": "https://nature.com/articles/s41586-024-07487-w"
 }
 ```
 
 ### 2. Ingest PDF Document
 * **Endpoint**: `POST /api/v1/ingest/pdf`
-* **Request**:
-```bash
-curl -X POST "http://localhost:8000/api/v1/ingest/pdf" \
-     -F "file=@/path/to/paper.pdf"
-```
+* **Multipart Form**: `file` (binary PDF file payload)
 
 ### 3. Submit Research Query
 * **Endpoint**: `POST /api/v1/query`
-* **Request**:
-```bash
-curl -X POST "http://localhost:8000/api/v1/query" \
-     -H "Content-Type: application/json" \
-     -d '{
-       "query": "What are the latest breakthroughs in protein folding prediction and how do they compare to AlphaFold2?",
-       "use_crew": false
-     }'
-```
-* **Response**:
+* **Request Body**:
 ```json
 {
-  "answer": "Protein folding prediction breakthroughs are highlighted by AlphaFold 3 (2024)... [1]. Comparing AF3 and AF2 [2]...",
-  "citations": [
-    {
-      "index": 1,
-      "title": "Accurate structure prediction of biomolecular interactions with AlphaFold 3",
-      "source": "https://nature.com/articles/s41586-024-07487-w"
-    }
-  ],
-  "confidence_score": 0.94
+  "query": "What are the latest breakthroughs in protein folding prediction and how do they compare to AlphaFold2?",
+  "use_crew": false
 }
 ```
 
 ---
 
-## Deployment Guide
-
-### Deploying with Docker
-
-1. **Build container**:
-```bash
-docker build -t research-assistant .
-```
-
-2. **Run container locally**:
-```bash
-docker run -p 8000:8000 --env-file .env research-assistant
-```
-
-### Deploying on Railway
-
-1. Install Railway CLI and login (`railway login`).
-2. Initialize project (`railway init`).
-3. Set your variables in Railway console corresponding to `.env`.
-4. Deploy:
-```bash
-railway up
-```
-Railway will automatically detect the `Dockerfile`, spin up a container, expose port 8000, and execute the health check.
+## Windows DLL Conflict Note
+When loading deep learning frameworks (like PyTorch and `sentence_transformers`) alongside native C-binding wrappers (like PyMuPDF `fitz` or Pinecone), Windows systems can raise an Access Violation `0xC0000005` DLL crash if imports are resolved in the wrong order. 
+This project resolves this by preemptively importing `sentence_transformers` at the very entry points of execution:
+- [app/__init__.py](file:///c:/Users/chibb/OneDrive/Desktop/My%20Projects/AI%20ASSISTANT/research_assistant/app/__init__.py) for main execution paths.
+- [tests/conftest.py](file:///c:/Users/chibb/OneDrive/Desktop/My%20Projects/AI%20ASSISTANT/research_assistant/tests/conftest.py) for testing suites.
+- [run_pipeline.py](file:///c:/Users/chibb/OneDrive/Desktop/My%20Projects/AI%20ASSISTANT/research_assistant/run_pipeline.py) for the standalone pipeline script.
 
 ---
 
