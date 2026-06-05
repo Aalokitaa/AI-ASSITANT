@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "research_assistant/index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "screenshots/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "research_assistant/index.html"
+    },
+    {
+      "src": "/screenshots/(.*)",
+      "dest": "screenshots/$1"
+    }
+  ]
+}
