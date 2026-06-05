@@ -1,6 +1,14 @@
 # AI Research Assistant: Autonomous RAG & Multi-Agent Co-Pilot
 
-> An enterprise-grade, high-performance RAG pipeline and multi-agent system designed to automate academic synthesis, facts validation, and citation parsing, powered by **Google Gemini 2.5 Flash** and featuring a beautiful dark-themed web dashboard.
+> An enterprise-grade, high-performance RAG pipeline and multi-agent system designed to automate academic synthesis, facts validation, and citation parsing, powered by **Google Gemini 2.5 Flash** and featuring a clean, Figma-inspired web dashboard.
+
+---
+
+## Screenshots
+
+Here is a preview of the clean, Figma-inspired user interface running a live research query:
+
+![ResearchMind AI Dashboard](assets/dashboard_screenshot.png)
 
 ---
 
@@ -52,7 +60,7 @@ The project features a **two-stage retrieval pipeline** integrated with a **mult
 ## Key Features
 
 1. **Google Gemini LLM Backbone**: Uses **Gemini 2.5 Flash** for reasoning, synthesis, citation formatting, and multi-agent coordination.
-2. **Beautiful Dark-Mode Web UI**: High-fidelity dark theme with glassmorphism, real-time response streaming, visual confidence score meters, metadata/source viewers, and integrated API key configuration (safely stored locally in the browser).
+2. **Figma-Inspired Web UI**: High-fidelity, clean layout styling matching Figma design guidelines, with sidebar topic history, real-time response streaming, and interactive collapsible sources/citations drawer.
 3. **Advanced Retrieval System**: 
    - Core embedding using Sentence-Transformers (`all-MiniLM-L6-v2`).
    - Pinecone serverless integration for indexing and vector similarity search.
