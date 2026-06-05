@@ -5,10 +5,9 @@
 ---
 
 ## Screenshots
-
-Here is a preview of the clean, Figma-inspired user interface running a live research query:
-
-![ResearchMind AI Dashboard](assets/dashboard_screenshot.png)
+![Home Screen](screenshots/home.png)
+![Research Response](screenshots/response.png)
+![Grounding Sources](screenshots/sources.png)
 
 ---
 
