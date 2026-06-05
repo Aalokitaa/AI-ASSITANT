@@ -1,0 +1,13 @@
+# Exclude environment variable files containing secret keys
+.env
+.env.local
+.env.*.local
+research_assistant/.env
+
+# Exclude python packages, caches and virtual envs
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+*.log

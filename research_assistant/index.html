@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResearchMind AI — Gemini Research Co-pilot</title>
+  <!-- Google Fonts for premium typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0b0c10;
+      --sidebar-bg: #111219;
+      --panel-bg: #161824;
+      --card-bg: #1d2030;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.16);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dark: #6b7280;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --primary-glow: rgba(59, 130, 246, 0.15);
+      --accent-emerald: #10b981;
+      --accent-red: #ef4444;
+      --accent-orange: #f59e0b;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-title: 'Outfit', sans-serif;
+      --font-mono: 'Fira Code', monospace;
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Scrollbars styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Top Navigation / Header */
+    header {
+      background-color: var(--sidebar-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      z-index: 10;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      background: linear-gradient(135deg, var(--primary), var(--accent-emerald));
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-family: var(--font-title);
+      color: white;
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    .logo-text {
+      font-family: var(--font-title);
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #ffffff, #9ca3af);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .model-badge {
+      background-color: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: var(--primary);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.05);
+    }
+
+    .model-badge::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background-color: var(--accent-emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-emerald);
+    }
+
+    /* Outer Layout */
+    .app-container {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 60px);
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* Sidebar - Left panel section A (History & API Keys) */
+    .sidebar {
+      width: 260px;
+      background-color: var(--sidebar-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .sidebar-section {
+      padding: 16px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sidebar-title {
+      font-family: var(--font-title);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+
+    .key-container {
+      background-color: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .key-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .key-status {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .key-status.missing {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--accent-red);
+    }
+    .key-status.configured {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--accent-emerald);
+    }
+
+    .key-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .key-input {
+      width: 100%;
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 32px 8px 10px;
+      font-size: 12px;
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      outline: none;
+      transition: border-color var(--transition-fast);
+    }
+
+    .key-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-glow);
+    }
+
+    .key-toggle {
+      position: absolute;
+      right: 8px;
+      background: none;
+      border: none;
+      color: var(--text-dark);
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .key-toggle:hover {
+      color: var(--text-muted);
+    }
+
+    /* History List */
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow-y: auto;
+      max-height: calc(100vh - 280px);
+    }
+
+    .history-item {
+      background-color: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 10px 12px;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: all var(--transition-fast);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .history-item:hover {
+      background-color: rgba(255, 255, 255, 0.03);
+      color: var(--text-main);
+      border-color: var(--border-color);
+    }
+
+    .history-item.active {
+      background-color: rgba(59, 130, 246, 0.08);
+      border-color: rgba(59, 130, 246, 0.2);
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .history-item-icon {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .no-history {
+      font-size: 12px;
+      color: var(--text-dark);
+      text-align: center;
+      padding: 20px 10px;
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+    }
+
+    /* Main Panels Layout */
+    .main-panels {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Left Panel: Chat Area */
+    .chat-panel {
+      flex: 3;
+      min-width: 450px;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg-color);
+      border-right: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .message {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 90%;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .message-bubble {
+      padding: 16px 20px;
+      border-radius: 12px;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .message.user .message-bubble {
+      background-color: var(--primary);
+      color: white;
+      border-top-right-radius: 2px;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+    }
+
+    .message.assistant .message-bubble {
+      background-color: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-top-left-radius: 2px;
+      width: 100%;
+    }
+
+    .message-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-dark);
+      font-weight: 500;
+    }
+
+    .message.user .message-info {
+      flex-direction: row-reverse;
+    }
+
+    /* Input Box Section */
+    .chat-input-container {
+      padding: 20px 32px 32px 32px;
+      background-color: linear-gradient(to top, var(--bg-color) 80%, transparent);
+      border-top: 1px solid var(--border-color);
+    }
+
+    .input-wrapper {
+      background-color: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 8px 12px 8px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+    }
+
+    .input-wrapper:focus-within {
+      border-color: rgba(59, 130, 246, 0.5);
+      box-shadow: 0 8px 30px rgba(59, 130, 246, 0.1);
+    }
+
+    .query-textarea {
+      width: 100%;
+      height: 48px;
+      max-height: 120px;
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      resize: none;
+      outline: none;
+      line-height: 1.5;
+    }
+
+    .query-textarea::placeholder {
+      color: var(--text-dark);
+    }
+
+    .input-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      padding-top: 8px;
+    }
+
+    .shortcut-tip {
+      font-size: 11px;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .submit-btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--transition-fast);
+      font-family: var(--font-title);
+    }
+
+    .submit-btn:hover {
+      background-color: var(--primary-hover);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+    }
+
+    .submit-btn:disabled {
+      background-color: var(--border-color);
+      color: var(--text-dark);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Right Panel: Sources & Citations */
+    .sources-panel {
+      flex: 2;
+      min-width: 300px;
+      background-color: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sources-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sources-title {
+      font-family: var(--font-title);
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sources-count {
+      background-color: rgba(255, 255, 255, 0.06);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    .sources-list {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .source-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      text-decoration: none;
+    }
+
+    .source-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .source-card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .source-favicon {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      background-color: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .source-domain {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .source-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-main);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .no-sources {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      color: var(--text-dark);
+      text-align: center;
+      gap: 12px;
+      padding: 40px 20px;
+    }
+
+    .no-sources-icon {
+      font-size: 40px;
+      opacity: 0.3;
+    }
+
+    /* Welcome / Greeting Screen */
+    .welcome-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      padding: 40px;
+      max-width: 600px;
+      margin: 0 auto;
+      gap: 16px;
+    }
+
+    .welcome-title {
+      font-family: var(--font-title);
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff, #9ca3af);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .welcome-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .suggested-queries {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .suggested-btn {
+      background-color: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text-muted);
+      font-size: 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .suggested-btn:hover {
+      border-color: var(--primary);
+      color: var(--text-main);
+      background-color: var(--card-bg);
+      transform: translateY(-1px);
+    }
+
+    .suggested-btn-tag {
+      font-size: 9px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+
+    /* Markdown styling inside output bubble */
+    .md-render h1, .md-render h2, .md-render h3 {
+      font-family: var(--font-title);
+      color: var(--text-main);
+      margin-top: 16px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .md-render h1 { font-size: 18px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px; }
+    .md-render h2 { font-size: 15px; }
+    .md-render h3 { font-size: 13px; }
+
+    .md-render p {
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    .md-render ul, .md-render ol {
+      margin-left: 20px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .md-render li {
+      line-height: 1.5;
+    }
+
+    .md-render code {
+      font-family: var(--font-mono);
+      background-color: rgba(255, 255, 255, 0.08);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #f43f5e;
+    }
+
+    .md-render pre {
+      background-color: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 12px;
+      overflow-x: auto;
+      margin-bottom: 12px;
+    }
+
+    .md-render pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      color: #e2e8f0;
+      font-size: 12px;
+    }
+
+    .md-render strong {
+      color: white;
+      font-weight: 600;
+    }
+
+    .citation-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      background-color: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      padding: 0px 5px;
+      border-radius: 4px;
+      font-size: 11px;
+      margin: 0 2px;
+      font-family: var(--font-mono);
+    }
+    .citation-link:hover {
+      text-decoration: underline;
+      background-color: rgba(59, 130, 246, 0.15);
+    }
+
+    .confidence-score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background-color: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-emerald);
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    /* Toolbar below streaming result */
+    .bubble-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .bubble-btn {
+      background: none;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all var(--transition-fast);
+      font-family: var(--font-title);
+    }
+
+    .bubble-btn:hover {
+      border-color: var(--text-dark);
+      color: var(--text-main);
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Skeleton Loading state */
+    .skeleton {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      padding: 4px 0;
+    }
+
+    .skeleton-line {
+      height: 14px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.04) 75%);
+      background-size: 200% 100%;
+      animation: pulse 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    @keyframes pulse {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .skeleton-line.h { width: 40%; height: 18px; margin-bottom: 8px; }
+    .skeleton-line.l1 { width: 90%; }
+    .skeleton-line.l2 { width: 85%; }
+    .skeleton-line.l3 { width: 70%; }
+
+    /* Alert and Error Banner */
+    .alert-banner {
+      background-color: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+    .alert-banner-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+    .alert-banner-btn {
+      background-color: var(--accent-red);
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      width: fit-content;
+      transition: opacity var(--transition-fast);
+    }
+    .alert-banner-btn:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header>
+    <div class="header-logo">
+      <div class="logo-icon">R</div>
+      <div class="logo-text">ResearchMind AI</div>
+    </div>
+    <div class="model-badge">Gemini 2.5 Flash</div>
+  </header>
+
+  <div class="app-container">
+    
+    <!-- Left Panel Section A: Sidebar with Config & History -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Research Queries</div>
+        <div class="history-list" id="history-list">
+          <!-- Populated by JS -->
+          <div class="no-history">No search history yet.</div>
+        </div>
+      </div>
+      
+      <!-- API Key management area at bottom of sidebar -->
+      <div class="key-container">
+        <div class="key-label">
+          <span>GOOGLE API KEY</span>
+          <span id="key-status" class="key-status missing">Missing</span>
+        </div>
+        <div class="key-input-wrapper">
+          <input type="password" id="api-key-input" class="key-input" placeholder="Paste GOOGLE_API_KEY..." />
+          <button class="key-toggle" id="toggle-key-visibility" title="Toggle Visibility">👁️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Panels Layout -->
+    <div class="main-panels">
+      
+      <!-- Center Panel: Chat Area -->
+      <div class="chat-panel">
+        <div class="chat-messages" id="chat-messages">
+          
+          <!-- Default Greeting/Welcome screen -->
+          <div class="welcome-container" id="welcome-screen">
+            <h1 class="welcome-title">Autonomous Research Co-pilot</h1>
+            <p class="welcome-subtitle">
+              Ask deep research queries, synthesize insights across documents, and check real-time citation links. Powered by Google Gemini 2.5 Flash with low latency streaming.
+            </p>
+            <div class="suggested-queries">
+              <button class="suggested-btn" onclick="runSuggested('What are the latest breakthroughs in protein folding prediction and how do they compare to AlphaFold2?')">
+                <span class="suggested-btn-tag">Structural Biology</span>
+                <span>Breakthroughs in protein folding vs AlphaFold 2</span>
+              </button>
+              <button class="suggested-btn" onclick="runSuggested('Compare transformer vs mamba architecture for long-context tasks')">
+                <span class="suggested-btn-tag">Machine Learning</span>
+                <span>Transformer vs Mamba for long-context</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Chat Input Field -->
+        <div class="chat-input-container">
+          <div class="input-wrapper">
+            <textarea id="query-input" class="query-textarea" placeholder="Ask a deep research question... (Press Enter to submit, Shift+Enter for newline)"></textarea>
+            <div class="input-footer">
+              <div class="shortcut-tip">
+                <span>⚡ Powered by Google Generative AI</span>
+              </div>
+              <button id="submit-btn" class="submit-btn" disabled>
+                <span>Research</span>
+                <span class="submit-icon">🔍</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel: Sources & Citations -->
+      <div class="sources-panel">
+        <div class="sources-header">
+          <div class="sources-title">
+            <span>📚 Grounding Sources</span>
+            <span id="sources-count" class="sources-count">0</span>
+          </div>
+        </div>
+        <div class="sources-list" id="sources-list">
+          <div class="no-sources" id="no-sources-view">
+            <div class="no-sources-icon">🌐</div>
+            <p>No active citations loaded. Submitting a research query will list matched URLs and verified sources here.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // App State
+    let conversationHistory = [];
+    let isGenerating = false;
+    let activeStreamController = null;
+    let currentAssistantBubble = null;
+    let currentResponseText = "";
+    
+    // DOM Elements
+    const apiKeyInput = document.getElementById("api-key-input");
+    const keyStatusBadge = document.getElementById("key-status");
+    const toggleKeyBtn = document.getElementById("toggle-key-visibility");
+    const queryInput = document.getElementById("query-input");
+    const submitBtn = document.getElementById("submit-btn");
+    const chatMessages = document.getElementById("chat-messages");
+    const welcomeScreen = document.getElementById("welcome-screen");
+    const sourcesList = document.getElementById("sources-list");
+    const sourcesCount = document.getElementById("sources-count");
+    const noSourcesView = document.getElementById("no-sources-view");
+    const historyListContainer = document.getElementById("history-list");
+
+    // Load API Key from localStorage on initialization
+    window.addEventListener("DOMContentLoaded", () => {
+      const storedKey = localStorage.getItem("GOOGLE_API_KEY");
+      if (storedKey) {
+        apiKeyInput.value = storedKey;
+        updateKeyStatus(storedKey);
+      } else {
+        updateKeyStatus("");
+      }
+      loadHistoryFromStorage();
+      adjustTextareaHeight();
+    });
+
+    // Handle Input States
+    apiKeyInput.addEventListener("input", (e) => {
+      const key = e.target.value.trim();
+      localStorage.setItem("GOOGLE_API_KEY", key);
+      updateKeyStatus(key);
+    });
+
+    queryInput.addEventListener("input", () => {
+      adjustTextareaHeight();
+      toggleSubmitButton();
+    });
+
+    queryInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        submitQuery();
+      }
+    });
+
+    submitBtn.addEventListener("click", submitQuery);
+
+    toggleKeyBtn.addEventListener("click", () => {
+      if (apiKeyInput.type === "password") {
+        apiKeyInput.type = "text";
+        toggleKeyBtn.textContent = "🙈";
+      } else {
+        apiKeyInput.type = "password";
+        toggleKeyBtn.textContent = "👁️";
+      }
+    });
+
+    function adjustTextareaHeight() {
+      queryInput.style.height = "auto";
+      queryInput.style.height = (queryInput.scrollHeight) + "px";
+    }
+
+    function toggleSubmitButton() {
+      const hasKey = apiKeyInput.value.trim().length > 0;
+      const hasQuery = queryInput.value.trim().length > 0;
+      submitBtn.disabled = !hasKey || hasQuery === 0 || isGenerating;
+    }
+
+    function updateKeyStatus(key) {
+      if (key && !key.startsWith("your_")) {
+        keyStatusBadge.textContent = "Configured";
+        keyStatusBadge.className = "key-status configured";
+      } else {
+        keyStatusBadge.textContent = "Missing";
+        keyStatusBadge.className = "key-status missing";
+      }
+      toggleSubmitButton();
+    }
+
+    // Run a Suggested Query
+    function runSuggested(text) {
+      queryInput.value = text;
+      adjustTextareaHeight();
+      toggleSubmitButton();
+      submitQuery();
+    }
+
+    // Render Clean Inline Markdown Function
+    function renderMarkdown(text) {
+      if (!text) return "";
+      
+      // Escape HTML to prevent XSS (except for elements we generate)
+      let html = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      
+      // Handle fenced code blocks
+      html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
+        return `<pre><code>${code.trim()}</code></pre>`;
+      });
+      
+      // Handle inline code
+      html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+      
+      // Handle headers
+      html = html.replace(/^### (.*$)/gim, "<h3>$1</h3>");
+      html = html.replace(/^## (.*$)/gim, "<h2>$1</h2>");
+      html = html.replace(/^# (.*$)/gim, "<h1>$1</h1>");
+      
+      // Handle bullet lists
+      const lines = html.split("\n");
+      let inList = false;
+      let resultLines = [];
+      
+      for (let line of lines) {
+        const listMatch = line.match(/^\s*[-*+]\s+(.*)/);
+        if (listMatch) {
+          if (!inList) {
+            resultLines.push("<ul>");
+            inList = true;
+          }
+          resultLines.push(`<li>${listMatch[1]}</li>`);
+        } else {
+          if (inList) {
+            resultLines.push("</ul>");
+            inList = false;
+          }
+          resultLines.push(line);
+        }
+      }
+      if (inList) {
+        resultLines.push("</ul>");
+      }
+      html = resultLines.join("\n");
+      
+      // Handle bold and italic
+      html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+      html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+      
+      // Handle links
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" class="citation-link">$1</a>');
+      
+      // Process paragraphs
+      const paragraphs = html.split(/\n\n+/);
+      html = paragraphs.map(p => {
+        const trimmed = p.trim();
+        if (!trimmed) return "";
+        if (trimmed.startsWith("<h") || trimmed.startsWith("<ul") || trimmed.startsWith("<pre") || trimmed.startsWith("<li")) {
+          return trimmed;
+        }
+        return `<p>${trimmed.replace(/\n/g, "<br>")}</p>`;
+      }).join("");
+      
+      return html;
+    }
+
+    // Extract URLs and Populate Sources Panel
+    function parseAndDisplaySources(text) {
+      const seenUrls = new Set();
+      const sources = [];
+      
+      // Match markdown links: [Title](URL)
+      const mdLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+      let match;
+      // Reset index
+      mdLinkRegex.lastIndex = 0;
+      while ((match = mdLinkRegex.exec(text)) !== null) {
+        const title = match[1].trim();
+        const url = match[2].trim();
+        if (!seenUrls.has(url)) {
+          seenUrls.add(url);
+          sources.push({ title, url });
+        }
+      }
+      
+      // Match raw URLs that are not wrapped in brackets/parentheses
+      const rawUrlRegex = /(https?:\/\/[^\s\)\"\'\]]+)/g;
+      rawUrlRegex.lastIndex = 0;
+      while ((match = rawUrlRegex.exec(text)) !== null) {
+        const url = match[1].trim();
+        if (!seenUrls.has(url)) {
+          seenUrls.add(url);
+          let title = "Source";
+          try {
+            const parsedUrl = new URL(url);
+            title = parsedUrl.hostname.replace("www.", "");
+          } catch (e) {}
+          sources.push({ title, url });
+        }
+      }
+
+      // Render cards in right panel
+      if (sources.length > 0) {
+        noSourcesView.style.display = "none";
+        sourcesCount.textContent = sources.length;
+        
+        let sourcesHTML = "";
+        sources.forEach((source, idx) => {
+          let domain = "Link";
+          try {
+            domain = new URL(source.url).hostname.replace("www.", "");
+          } catch (e) {}
+          
+          sourcesHTML += `
+            <a href="${source.url}" target="_blank" class="source-card">
+              <div class="source-card-header">
+                <span class="source-favicon">${idx + 1}</span>
+                <span class="source-domain">${domain}</span>
+              </div>
+              <div class="source-title">${source.title || source.url}</div>
+            </a>
+          `;
+        });
+        sourcesList.innerHTML = sourcesHTML;
+      } else {
+        resetSourcesView();
+      }
+    }
+
+    function resetSourcesView() {
+      sourcesCount.textContent = "0";
+      noSourcesView.style.display = "flex";
+      sourcesList.innerHTML = "";
+      sourcesList.appendChild(noSourcesView);
+    }
+
+    // Submit Query and initiate Streaming
+    async function submitQuery() {
+      const key = apiKeyInput.value.trim();
+      const query = queryInput.value.trim();
+      
+      if (!key || !query || isGenerating) return;
+
+      isGenerating = true;
+      toggleSubmitButton();
+      
+      // Hide welcome screen if showing
+      if (welcomeScreen) {
+        welcomeScreen.style.display = "none";
+      }
+
+      // Add User Message
+      appendMessage("user", query);
+      
+      // Clear input
+      queryInput.value = "";
+      adjustTextareaHeight();
+
+      // Create Assistant Bubble and placeholder
+      const bubbleId = appendMessage("assistant", "", true); // isSkeleton = true
+      currentAssistantBubble = document.getElementById(bubbleId);
+      currentResponseText = "";
+      
+      resetSourcesView();
+
+      // Initiate fetch
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?key=${key}&alt=sse`;
+        
+        const systemPrompt = "You are an expert AI research assistant. For every query, provide: (1) a comprehensive research summary, (2) key findings as bullet points, (3) 3-5 cited sources with URLs, (4) a confidence score from 0-100%. Format your response in clean markdown.";
+        
+        const requestBody = {
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: query }]
+            }
+          ],
+          systemInstruction: {
+            parts: [{ text: systemPrompt }]
+          },
+          generationConfig: {
+            temperature: 0.2,
+            maxOutputTokens: 4096
+          }
+        };
+
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(errText || `Server responded with status ${response.status}`);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let buffer = "";
+
+        // Remove skeleton loader upon receiving first bytes
+        let firstTokenReceived = false;
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          buffer += decoder.decode(value, { stream: true });
+          let lines = buffer.split("\n");
+          buffer = lines.pop(); // Hold onto incomplete last line
+          
+          for (const line of lines) {
+            const trimmedLine = line.trim();
+            if (!trimmedLine) continue;
+            
+            if (trimmedLine.startsWith("data: ")) {
+              const dataStr = trimmedLine.substring(6).trim();
+              if (dataStr === "[DONE]") continue;
+              
+              try {
+                const parsed = JSON.parse(dataStr);
+                const chunkText = parsed.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                
+                if (chunkText) {
+                  if (!firstTokenReceived) {
+                    firstTokenReceived = true;
+                    // Remove skeleton loader UI
+                    currentAssistantBubble.innerHTML = `<div class="message-bubble md-render"></div>`;
+                  }
+                  
+                  currentResponseText += chunkText;
+                  updateAssistantBubble(currentResponseText);
+                }
+              } catch (e) {
+                console.error("Error parsing stream chunk:", e, dataStr);
+              }
+            }
+          }
+        }
+        
+        // Handle trailing buffer
+        if (buffer.trim().startsWith("data: ")) {
+          try {
+            const dataStr = buffer.trim().substring(6).trim();
+            const parsed = JSON.parse(dataStr);
+            const chunkText = parsed.candidates?.[0]?.content?.parts?.[0]?.text || "";
+            if (chunkText) {
+              currentResponseText += chunkText;
+              updateAssistantBubble(currentResponseText);
+            }
+          } catch(e) {}
+        }
+
+        // Streaming complete
+        finishStreaming(query, currentResponseText);
+
+      } catch (err) {
+        console.error("Research fetch error:", err);
+        showErrorBubble(err.message);
+      } finally {
+        isGenerating = false;
+        toggleSubmitButton();
+      }
+    }
+
+    // Update the Assistant text bubble and run the markdown + citation parsers
+    function updateAssistantBubble(text) {
+      const bubble = currentAssistantBubble.querySelector(".message-bubble");
+      if (bubble) {
+        // Parse confidence score if exists in text
+        let confidenceHTML = "";
+        const confMatch = text.match(/confidence(?:\s+score)?:\s*(\d+)%/i);
+        if (confMatch) {
+          confidenceHTML = `
+            <div class="confidence-score-badge">
+              🛡️ Verified Confidence: ${confMatch[1]}%
+            </div>
+          `;
+        }
+        
+        // Render Markdown content
+        bubble.innerHTML = renderMarkdown(text) + confidenceHTML;
+        
+        // Populate sources panel
+        parseAndDisplaySources(text);
+        
+        // Autoscroll
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+    }
+
+    // Finalize bubble with toolbar actions
+    function finishStreaming(query, responseText) {
+      if (!currentAssistantBubble) return;
+      
+      const actionsDiv = document.createElement("div");
+      actionsDiv.className = "bubble-actions";
+      
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "bubble-btn";
+      copyBtn.innerHTML = "📋 Copy Report";
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(responseText);
+        copyBtn.innerHTML = "✅ Copied!";
+        setTimeout(() => { copyBtn.innerHTML = "📋 Copy Report"; }, 2000);
+      };
+      
+      actionsDiv.appendChild(copyBtn);
+      currentAssistantBubble.appendChild(actionsDiv);
+
+      // Save to history list
+      saveQueryToHistory(query, responseText);
+    }
+
+    // Show clean errors inside Assistant Bubble
+    function showErrorBubble(errorMsg) {
+      if (!currentAssistantBubble) return;
+      
+      // Determine error type for contextual suggestions
+      let customHeading = "Connection Failed";
+      let actionSuggestion = "Ensure your network is active and Tavily/Google configurations are set.";
+      
+      if (errorMsg.includes("API_KEY_INVALID") || errorMsg.includes("API key not valid")) {
+        customHeading = "Invalid API Key Detected";
+        actionSuggestion = "Please check that your GOOGLE_API_KEY in the sidebar is valid and starts with 'AIzaSy'.";
+      }
+
+      currentAssistantBubble.innerHTML = `
+        <div class="alert-banner">
+          <div class="alert-banner-header">
+            ⚠️ <strong>${customHeading}</strong>
+          </div>
+          <p>${errorMsg}</p>
+          <p style="font-size: 11px; opacity: 0.8;">${actionSuggestion}</p>
+          <button class="alert-banner-btn" onclick="retryLastQuery()">Retry Research</button>
+        </div>
+      `;
+      resetSourcesView();
+    }
+
+    function retryLastQuery() {
+      // Find last user query
+      const userMessages = chatMessages.querySelectorAll(".message.user .message-bubble");
+      if (userMessages.length > 0) {
+        const lastQuery = userMessages[userMessages.length - 1].innerText;
+        // Clean messages and rerun
+        currentAssistantBubble.remove();
+        isGenerating = false;
+        queryInput.value = lastQuery;
+        submitQuery();
+      }
+    }
+
+    // UI helper: Add bubbles to chat
+    function appendMessage(role, text, isSkeleton = false) {
+      const bubbleId = "bubble-" + Date.now();
+      const messageDiv = document.createElement("div");
+      messageDiv.className = `message ${role}`;
+      messageDiv.id = bubbleId;
+
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const roleName = role === "user" ? "You" : "Research Assistant";
+      
+      let innerHTML = "";
+      if (isSkeleton) {
+        innerHTML = `
+          <div class="message-info">${roleName} • ${time}</div>
+          <div class="message-bubble" style="width: 100%;">
+            <div class="skeleton">
+              <div class="skeleton-line h"></div>
+              <div class="skeleton-line l1"></div>
+              <div class="skeleton-line l2"></div>
+              <div class="skeleton-line l3"></div>
+            </div>
+          </div>
+        `;
+      } else {
+        innerHTML = `
+          <div class="message-info">${roleName} • ${time}</div>
+          <div class="message-bubble">${role === "user" ? text : renderMarkdown(text)}</div>
+        `;
+      }
+
+      messageDiv.innerHTML = innerHTML;
+      chatMessages.appendChild(messageDiv);
+      
+      // Scroll to bottom
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      return bubbleId;
+    }
+
+    // Save and load conversation history from localStorage
+    function saveQueryToHistory(query, responseText) {
+      let history = JSON.parse(localStorage.getItem("research_history") || "[]");
+      
+      // Prevent duplicates
+      history = history.filter(item => item.query !== query);
+      
+      history.unshift({
+        query,
+        answer: responseText,
+        timestamp: Date.now()
+      });
+      
+      // Cap at 10 items
+      if (history.length > 10) history.pop();
+      
+      localStorage.setItem("research_history", JSON.stringify(history));
+      loadHistoryFromStorage();
+    }
+
+    function loadHistoryFromStorage() {
+      const history = JSON.parse(localStorage.getItem("research_history") || "[]");
+      if (history.length === 0) {
+        historyListContainer.innerHTML = '<div class="no-history">No search history yet.</div>';
+        return;
+      }
+
+      let historyHTML = "";
+      history.forEach((item, idx) => {
+        historyHTML += `
+          <button class="history-item" onclick="loadSavedQuery(${idx})" title="${item.query}">
+            <span class="history-item-icon">📝</span>
+            <span>${item.query}</span>
+          </button>
+        `;
+      });
+      historyListContainer.innerHTML = historyHTML;
+    }
+
+    // Load saved conversation back into chat view
+    function loadSavedQuery(index) {
+      const history = JSON.parse(localStorage.getItem("research_history") || "[]");
+      const item = history[index];
+      if (!item) return;
+
+      // Deactivate other active history classes
+      const items = historyListContainer.querySelectorAll(".history-item");
+      items.forEach((btn, idx) => {
+        if (idx === index) btn.classList.add("active");
+        else btn.classList.remove("active");
+      });
+
+      // Hide welcome screen
+      welcomeScreen.style.display = "none";
+      chatMessages.innerHTML = "";
+
+      // Append user query bubble
+      appendMessage("user", item.query);
+
+      // Append assistant answer bubble
+      const bubbleId = appendMessage("assistant", item.answer);
+      currentAssistantBubble = document.getElementById(bubbleId);
+      currentResponseText = item.answer;
+      
+      // Add bubble action copy button
+      const actionsDiv = document.createElement("div");
+      actionsDiv.className = "bubble-actions";
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "bubble-btn";
+      copyBtn.innerHTML = "📋 Copy Report";
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(item.answer);
+        copyBtn.innerHTML = "✅ Copied!";
+        setTimeout(() => { copyBtn.innerHTML = "📋 Copy Report"; }, 2000);
+      };
+      actionsDiv.appendChild(copyBtn);
+      currentAssistantBubble.appendChild(actionsDiv);
+
+      // Parse confidence score if exists
+      let confidenceHTML = "";
+      const confMatch = item.answer.match(/confidence(?:\s+score)?:\s*(\d+)%/i);
+      if (confMatch) {
+        const bubble = currentAssistantBubble.querySelector(".message-bubble");
+        confidenceHTML = `
+          <div class="confidence-score-badge">
+            🛡️ Verified Confidence: ${confMatch[1]}%
+          </div>
+        `;
+        bubble.appendChild(document.createRange().createContextualFragment(confidenceHTML));
+      }
+
+      // Populate sources panel
+      parseAndDisplaySources(item.answer);
+
+      // Populate textarea input in case they want to run it again
+      queryInput.value = item.query;
+      adjustTextareaHeight();
+      toggleSubmitButton();
+    }
+  </script>
+</body>
+</html>

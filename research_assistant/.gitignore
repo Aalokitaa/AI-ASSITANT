@@ -1,0 +1,33 @@
+# Exclude environment variables and API keys
+.env
+.env.local
+.env.*.local
+db.sqlite3
+
+# Exclude python caching and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Exclude virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Exclude IDE settings and OS metadata
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Exclude test cache and reports
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Exclude custom local files
+research_assistant.egg-info/
+dist/
+build/
