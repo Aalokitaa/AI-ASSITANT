@@ -11,7 +11,7 @@ The project features a **two-stage retrieval pipeline** integrated with a **mult
 ```
 +-------------------------------------------------------------+
 |                     USER INTERFACE LAYER                    |
-|                FastAPI Backend / web UI Dashboard           |
+|                FastAPI Backend / Web UI Dashboard           |
 +------------------------------+------------------------------+
                                |
             ┌──────────────────┴──────────────────┐
@@ -51,7 +51,7 @@ The project features a **two-stage retrieval pipeline** integrated with a **mult
 
 ## Key Features
 
-1. **Google Gemini LLM Backbone**: Completely migrated from legacy OpenAI/Anthropic APIs to use **Gemini 2.5 Flash** for reasoning, synthesis, citation formatting, and multi-agent coordination.
+1. **Google Gemini LLM Backbone**: Uses **Gemini 2.5 Flash** for reasoning, synthesis, citation formatting, and multi-agent coordination.
 2. **Beautiful Dark-Mode Web UI**: High-fidelity dark theme with glassmorphism, real-time response streaming, visual confidence score meters, metadata/source viewers, and integrated API key configuration (safely stored locally in the browser).
 3. **Advanced Retrieval System**: 
    - Core embedding using Sentence-Transformers (`all-MiniLM-L6-v2`).
@@ -64,43 +64,45 @@ The project features a **two-stage retrieval pipeline** integrated with a **mult
 ## Directory Structure
 
 ```
-research_assistant/
-├── app/
-│   ├── __init__.py          # Preemptive sentence_transformers setup for Windows
-│   ├── main.py              # FastAPI server entry point
-│   ├── api/
-│   │   ├── routes.py        # API endpoints (ingest URL, ingest PDF, research query)
-│   │   └── schemas.py       # Pydantic request/response models
-│   ├── core/
-│   │   ├── agent.py         # ResearchReActAgent using Gemini 2.5 Flash
-│   │   ├── crew.py          # CrewAI agents (Researcher, Fact Checker, Citation Specialist)
-│   │   ├── ingestion.py     # Crawling (BeautifulSoup) and loading (PyMuPDF)
-│   │   └── retrieval.py     # Pinecone vector querying & MiniLM reranking
-│   ├── tools/
-│   │   ├── citation.py      # Regex parser for inline bracket citations and confidence estimator
-│   │   └── web_search.py    # Tavily API web search tool wrapper
-│   └── utils/
-│       ├── embeddings.py    # MiniLM embeddings layer helper
-│       └── chunker.py       # Clean whitespace chunker
-├── tests/
-│   ├── conftest.py          # Pytest hooks for early imports on Windows
-│   ├── test_agent.py        # Unit tests for ReAct agents & citation formatting
-│   ├── test_ingestion.py    # Unit tests for scrapers & chunkers
-│   └── test_retrieval.py    # Unit tests for vector indexing & reranking
-├── notebooks/
-│   └── demo.ipynb           # Interactive pipeline demonstration
-├── index.html               # Premium Web UI Dashboard
-├── test_runner.py           # Safe command-line test runner
-├── requirements.txt         # Project dependencies
-├── .env.example             # Template for API keys
-└── README.md                # System documentation
+.
+├── README.md                # System documentation (Root level)
+└── research_assistant/      # Application source directory
+    ├── app/
+    │   ├── __init__.py      # Preemptive sentence_transformers setup for Windows
+    │   ├── main.py          # FastAPI server entry point
+    │   ├── api/
+    │   │   ├── routes.py    # API endpoints (ingest URL, ingest PDF, research query)
+    │   │   └── schemas.py   # Pydantic request/response models
+    │   ├── core/
+    │   │   ├── agent.py     # ResearchReActAgent using Gemini 2.5 Flash
+    │   │   ├── crew.py      # CrewAI agents (Researcher, Fact Checker, Citation Specialist)
+    │   │   ├── ingestion.py # Crawling (BeautifulSoup) and loading (PyMuPDF)
+    │   │   └── retrieval.py # Pinecone vector querying & MiniLM reranking
+    │   ├── tools/
+    │   │   ├── citation.py  # Regex parser for inline bracket citations and confidence estimator
+    │   │   └── web_search.py# Tavily API web search tool wrapper
+    │   └── utils/
+    │       ├── embeddings.py# MiniLM embeddings layer helper
+    │       └── chunker.py   # Clean whitespace chunker
+    ├── tests/
+    │   ├── conftest.py      # Pytest hooks for early imports on Windows
+    │   ├── test_agent.py    # Unit tests for ReAct agents & citation formatting
+    │   ├── test_ingestion.py# Unit tests for scrapers & chunkers
+    │   └── test_retrieval.py# Unit tests for vector indexing & reranking
+    ├── notebooks/
+    │   └── demo.ipynb       # Interactive pipeline demonstration
+    ├── index.html           # Premium Web UI Dashboard
+    ├── test_runner.py       # Safe command-line test runner
+    ├── requirements.txt     # Project dependencies
+    ├── .env.example         # Template for API keys
+    └── Dockerfile           # Deployment container definition
 ```
 
 ---
 
 ## Configuration Reference
 
-Create a `.env` file in the `research_assistant` root directory using the `.env.example` structure:
+Create a `.env` file in the `research_assistant` directory using the `research_assistant/.env.example` template:
 
 ```env
 # Core LLM Key
@@ -143,15 +145,20 @@ python -m app.main
 The FastAPI backend will start at `http://127.0.0.1:8000`. You can explore the interactive OpenAPI docs at `http://127.0.0.1:8000/docs`.
 
 ### 3. Launch the Web UI
-Since the user interface is self-contained in a premium `index.html` file:
-* **Option A**: Double-click `index.html` to open it directly in any modern browser.
-* **Option B**: Use any static web server (e.g. `python -m http.server 3000` or Live Server extension).
+Since the user interface is self-contained in a premium `index.html` file inside the `research_assistant` directory:
+* **Option A**: Double-click `research_assistant/index.html` to open it directly in any modern browser.
+* **Option B**: Use any static web server:
+  ```bash
+  cd research_assistant
+  python -m http.server 3000
+  ```
 
 Configure your Gemini API key in the UI settings panel. The key is securely preserved in your browser's local storage and used directly for real-time streaming connections.
 
 ### 4. Running the Tests
 To run all verification suites safely:
 ```bash
+cd research_assistant
 python -m pytest
 ```
 
@@ -187,9 +194,9 @@ python -m pytest
 ## Windows DLL Conflict Note
 When loading deep learning frameworks (like PyTorch and `sentence_transformers`) alongside native C-binding wrappers (like PyMuPDF `fitz` or Pinecone), Windows systems can raise an Access Violation `0xC0000005` DLL crash if imports are resolved in the wrong order. 
 This project resolves this by preemptively importing `sentence_transformers` at the very entry points of execution:
-- [app/__init__.py](file:///c:/Users/chibb/OneDrive/Desktop/My%20Projects/AI%20ASSISTANT/research_assistant/app/__init__.py) for main execution paths.
-- [tests/conftest.py](file:///c:/Users/chibb/OneDrive/Desktop/My%20Projects/AI%20ASSISTANT/research_assistant/tests/conftest.py) for testing suites.
-- [run_pipeline.py](file:///c:/Users/chibb/OneDrive/Desktop/My%20Projects/AI%20ASSISTANT/research_assistant/run_pipeline.py) for the standalone pipeline script.
+- `research_assistant/app/__init__.py` for main execution paths.
+- `research_assistant/tests/conftest.py` for testing suites.
+- `research_assistant/run_pipeline.py` for the standalone pipeline script.
 
 ---
 
