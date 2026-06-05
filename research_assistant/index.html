@@ -3,33 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ResearchMind AI — Gemini Research Co-pilot</title>
+  <title>AI Research Assistant</title>
   <!-- Google Fonts for premium typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-color: #0b0c10;
-      --sidebar-bg: #111219;
-      --panel-bg: #161824;
-      --card-bg: #1d2030;
-      --border-color: rgba(255, 255, 255, 0.08);
-      --border-hover: rgba(255, 255, 255, 0.16);
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
-      --text-dark: #6b7280;
+      --bg-color: #ffffff;
+      --sidebar-bg: #f9fafb;
+      --header-bg: #1e1e1e;
+      --border-color: #e4e4e7;
+      --text-main: #09090b;
+      --text-muted: #71717a;
+      --text-light: #a1a1aa;
       --primary: #3b82f6;
       --primary-hover: #2563eb;
-      --primary-glow: rgba(59, 130, 246, 0.15);
-      --accent-emerald: #10b981;
-      --accent-red: #ef4444;
-      --accent-orange: #f59e0b;
+      --primary-glow: rgba(59, 130, 246, 0.1);
+      --input-bg: #f4f4f5;
+      --send-btn-bg: #71717a;
+      --send-btn-hover: #52525b;
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --font-title: 'Outfit', sans-serif;
-      --font-mono: 'Fira Code', monospace;
-      --transition-fast: 0.15s ease;
-      --transition-normal: 0.25s ease;
     }
 
     * {
@@ -57,233 +51,237 @@
       background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.1);
       border-radius: 3px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(0, 0, 0, 0.2);
     }
 
     /* Top Navigation / Header */
     header {
-      background-color: var(--sidebar-bg);
-      border-bottom: 1px solid var(--border-color);
-      padding: 12px 24px;
+      background-color: var(--header-bg);
+      color: white;
+      padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 60px;
+      height: 48px;
       z-index: 10;
+      flex-shrink: 0;
     }
 
-    .header-logo {
+    .header-left {
       display: flex;
       align-items: center;
-      gap: 10px;
     }
 
-    .logo-icon {
-      background: linear-gradient(135deg, var(--primary), var(--accent-emerald));
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
+    .figma-brand {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-family: var(--font-title);
-      color: white;
-      box-shadow: 0 0 15px var(--primary-glow);
+      gap: 8px;
     }
 
-    .logo-text {
-      font-family: var(--font-title);
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: -0.5px;
-      background: linear-gradient(to right, #ffffff, #9ca3af);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .model-badge {
-      background-color: rgba(59, 130, 246, 0.1);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      color: var(--primary);
-      padding: 4px 10px;
-      border-radius: 9999px;
+    .ai-badge {
+      background-color: #2c2c2c;
+      border: 1px solid #444;
+      color: #ccc;
+      padding: 2px 6px;
+      border-radius: 4px;
       font-size: 11px;
       font-weight: 600;
+    }
+
+    .header-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .file-name {
+      font-size: 14px;
+      font-weight: 500;
       display: flex;
       align-items: center;
       gap: 6px;
-      font-family: var(--font-mono);
-      text-transform: uppercase;
-      box-shadow: 0 0 10px rgba(59, 130, 246, 0.05);
+      cursor: pointer;
     }
 
-    .model-badge::before {
-      content: '';
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      background-color: var(--accent-emerald);
+    .chevron-down {
+      opacity: 0.7;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-icon-btn {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .header-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .user-avatar {
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
-      box-shadow: 0 0 8px var(--accent-emerald);
+      background-color: #444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ccc;
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid #555;
+    }
+
+    .share-btn {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .share-btn:hover {
+      background-color: #2563eb;
     }
 
     /* Outer Layout */
     .app-container {
       display: flex;
       flex: 1;
-      height: calc(100vh - 60px);
+      height: calc(100vh - 48px);
       width: 100vw;
       overflow: hidden;
+      position: relative;
     }
 
-    /* Sidebar - Left panel section A (History & API Keys) */
+    /* Sidebar - Left panel */
     .sidebar {
       width: 260px;
       background-color: var(--sidebar-bg);
       border-right: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      overflow: hidden;
       flex-shrink: 0;
+      height: 100%;
     }
 
-    .sidebar-section {
+    .sidebar-header {
       padding: 16px;
-      overflow-y: auto;
-      flex: 1;
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
 
-    .sidebar-title {
-      font-family: var(--font-title);
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-dark);
-      margin-bottom: 8px;
-    }
-
-    .key-container {
-      background-color: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border-color);
+    .new-topic-btn {
+      width: 100%;
+      background-color: #09090b;
+      color: white;
+      border: none;
+      padding: 12px 16px;
       border-radius: 8px;
-      padding: 12px;
-      margin: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .key-label {
-      font-size: 11px;
+      font-size: 14px;
       font-weight: 600;
-      color: var(--text-muted);
+      cursor: pointer;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.2s;
     }
 
-    .key-status {
-      font-size: 9px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: bold;
-    }
-    .key-status.missing {
-      background-color: rgba(239, 68, 68, 0.1);
-      color: var(--accent-red);
-    }
-    .key-status.configured {
-      background-color: rgba(16, 185, 129, 0.1);
-      color: var(--accent-emerald);
+    .new-topic-btn:hover {
+      background-color: #27272a;
     }
 
-    .key-input-wrapper {
+    .search-wrapper {
       position: relative;
       display: flex;
       align-items: center;
     }
 
-    .key-input {
-      width: 100%;
-      background-color: var(--bg-color);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 8px 32px 8px 10px;
-      font-size: 12px;
-      color: var(--text-main);
-      font-family: var(--font-mono);
-      outline: none;
-      transition: border-color var(--transition-fast);
-    }
-
-    .key-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px var(--primary-glow);
-    }
-
-    .key-toggle {
+    .search-icon {
       position: absolute;
-      right: 8px;
-      background: none;
-      border: none;
-      color: var(--text-dark);
-      cursor: pointer;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .key-toggle:hover {
+      left: 12px;
       color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      background-color: var(--input-bg);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px 8px 36px;
+      font-size: 14px;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .search-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 16px 16px 16px;
     }
 
     /* History List */
     .history-list {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      overflow-y: auto;
-      max-height: calc(100vh - 280px);
+      gap: 4px;
     }
 
     .history-item {
       background-color: transparent;
-      border: 1px solid transparent;
+      border: none;
       border-radius: 6px;
       padding: 10px 12px;
       text-align: left;
       cursor: pointer;
       color: var(--text-muted);
-      font-size: 13px;
+      font-size: 14px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      transition: all var(--transition-fast);
+      transition: background-color 0.2s, color 0.2s;
       display: flex;
       align-items: center;
       gap: 8px;
+      width: 100%;
     }
 
     .history-item:hover {
-      background-color: rgba(255, 255, 255, 0.03);
+      background-color: #f1f5f9;
       color: var(--text-main);
-      border-color: var(--border-color);
     }
 
     .history-item.active {
-      background-color: rgba(59, 130, 246, 0.08);
-      border-color: rgba(59, 130, 246, 0.2);
-      color: var(--primary);
+      background-color: #e2e8f0;
+      color: var(--text-main);
       font-weight: 500;
     }
 
@@ -293,51 +291,62 @@
     }
 
     .no-history {
-      font-size: 12px;
-      color: var(--text-dark);
+      font-size: 14px;
+      color: var(--text-muted);
       text-align: center;
-      padding: 20px 10px;
-      border: 1px dashed var(--border-color);
-      border-radius: 8px;
+      padding: 40px 10px;
     }
 
-    /* Main Panels Layout */
-    .main-panels {
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .version-text {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Main Workspace Panels */
+    .main-workspace {
       display: flex;
       flex: 1;
       overflow: hidden;
+      position: relative;
     }
 
-    /* Left Panel: Chat Area */
+    /* Center Panel: Chat Area */
     .chat-panel {
-      flex: 3;
-      min-width: 450px;
+      flex: 1;
       display: flex;
       flex-direction: column;
-      background-color: var(--bg-color);
-      border-right: 1px solid var(--border-color);
+      background-color: #ffffff;
+      height: 100%;
       position: relative;
     }
 
     .chat-messages {
       flex: 1;
       overflow-y: auto;
-      padding: 24px 32px;
+      padding: 32px 40px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 32px;
     }
 
     .message {
       display: flex;
       flex-direction: column;
       gap: 8px;
-      max-width: 90%;
-      animation: fadeIn 0.3s ease;
+      max-width: 85%;
+      animation: fadeIn 0.2s ease;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -352,189 +361,264 @@
       width: 100%;
     }
 
+    .message-info {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
     .message-bubble {
-      padding: 16px 20px;
+      padding: 14px 18px;
       border-radius: 12px;
       line-height: 1.6;
-      font-size: 14px;
+      font-size: 15px;
     }
 
     .message.user .message-bubble {
-      background-color: var(--primary);
-      color: white;
+      background-color: var(--input-bg);
+      color: var(--text-main);
       border-top-right-radius: 2px;
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
     }
 
     .message.assistant .message-bubble {
-      background-color: var(--panel-bg);
+      background-color: #ffffff;
       border: 1px solid var(--border-color);
       color: var(--text-main);
       border-top-left-radius: 2px;
       width: 100%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
-    .message-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 11px;
-      color: var(--text-dark);
-      font-weight: 500;
-    }
-
-    .message.user .message-info {
-      flex-direction: row-reverse;
-    }
-
-    /* Input Box Section */
+    /* Chat Input Area */
     .chat-input-container {
-      padding: 20px 32px 32px 32px;
-      background-color: linear-gradient(to top, var(--bg-color) 80%, transparent);
-      border-top: 1px solid var(--border-color);
+      padding: 0 40px 24px 40px;
+      background-color: #ffffff;
     }
 
     .input-wrapper {
-      background-color: var(--panel-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
+      background-color: var(--input-bg);
+      border-radius: 16px;
       padding: 8px 12px 8px 16px;
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-      transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
-    }
-
-    .input-wrapper:focus-within {
-      border-color: rgba(59, 130, 246, 0.5);
-      box-shadow: 0 8px 30px rgba(59, 130, 246, 0.1);
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
     .query-textarea {
-      width: 100%;
-      height: 48px;
+      flex: 1;
+      height: 24px;
       max-height: 120px;
       background: none;
       border: none;
       color: var(--text-main);
       font-family: var(--font-sans);
-      font-size: 14px;
+      font-size: 15px;
       resize: none;
       outline: none;
       line-height: 1.5;
+      padding-top: 2px;
     }
 
     .query-textarea::placeholder {
-      color: var(--text-dark);
+      color: var(--text-muted);
     }
 
-    .input-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.04);
-      padding-top: 8px;
-    }
-
-    .shortcut-tip {
-      font-size: 11px;
-      color: var(--text-dark);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .submit-btn {
-      background-color: var(--primary);
+    .send-btn {
+      background-color: var(--send-btn-bg);
       color: white;
       border: none;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: all var(--transition-fast);
-      font-family: var(--font-title);
+      justify-content: center;
+      transition: background-color 0.2s;
+      flex-shrink: 0;
     }
 
-    .submit-btn:hover {
-      background-color: var(--primary-hover);
-      box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+    .send-btn:hover {
+      background-color: var(--send-btn-hover);
     }
 
-    .submit-btn:disabled {
-      background-color: var(--border-color);
-      color: var(--text-dark);
+    .send-btn:disabled {
+      background-color: #e4e4e7;
+      color: #a1a1aa;
       cursor: not-allowed;
-      box-shadow: none;
     }
 
-    /* Right Panel: Sources & Citations */
-    .sources-panel {
-      flex: 2;
-      min-width: 300px;
-      background-color: var(--sidebar-bg);
+    .input-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      padding-left: 4px;
+    }
+
+    /* Welcome screen styled exactly like Figma screenshot */
+    .welcome-container {
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      gap: 20px;
     }
 
-    .sources-header {
-      padding: 20px;
+    .robot-badge {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background-color: #f4f4f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #18181b;
+    }
+
+    .welcome-title {
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-top: 8px;
+    }
+
+    .welcome-subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 600px;
+    }
+
+    .suggested-row {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+      margin-top: 20px;
+      justify-content: center;
+    }
+
+    .suggested-card {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      width: 240px;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      display: flex;
+      gap: 12px;
+    }
+
+    .suggested-card:hover {
+      border-color: #a1a1aa;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .card-icon-wrapper {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: #f4f4f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #18181b;
+      flex-shrink: 0;
+    }
+
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Collapsible Sources Drawer (Right side) */
+    .sources-drawer {
+      width: 300px;
+      background-color: #ffffff;
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: absolute;
+      right: 0;
+      top: 0;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      z-index: 5;
+      box-shadow: -4px 0 16px rgba(0,0,0,0.04);
+    }
+
+    .sources-drawer.active {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 16px;
       border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .sources-title {
-      font-family: var(--font-title);
+    .drawer-header h3 {
       font-size: 15px;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
-    .sources-count {
-      background-color: rgba(255, 255, 255, 0.06);
-      padding: 2px 8px;
-      border-radius: 9999px;
-      font-size: 11px;
-      font-family: var(--font-mono);
+    .close-drawer-btn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
       color: var(--text-muted);
     }
 
-    .sources-list {
-      padding: 20px;
-      overflow-y: auto;
+    .drawer-content {
       flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .sources-list {
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
 
     .source-card {
-      background-color: var(--card-bg);
+      background-color: var(--sidebar-bg);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 12px 16px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      cursor: pointer;
-      transition: all var(--transition-fast);
       text-decoration: none;
+      transition: border-color 0.2s;
     }
 
     .source-card:hover {
-      border-color: var(--primary);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      border-color: #a1a1aa;
     }
 
     .source-card-header {
@@ -547,23 +631,19 @@
       width: 16px;
       height: 16px;
       border-radius: 3px;
-      background-color: rgba(255, 255, 255, 0.05);
+      background-color: #e4e4e7;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 10px;
       font-weight: bold;
-      color: var(--primary);
-      flex-shrink: 0;
+      color: var(--text-main);
     }
 
     .source-domain {
       font-size: 11px;
-      font-weight: 600;
       color: var(--text-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-weight: 500;
     }
 
     .source-title {
@@ -575,104 +655,201 @@
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      text-overflow: ellipsis;
     }
 
-    .no-sources {
+    .drawer-toggle-btn {
+      position: absolute;
+      top: 16px;
+      right: 24px;
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      z-index: 4;
+      transition: background-color 0.2s;
+    }
+
+    .drawer-toggle-btn:hover {
+      background-color: var(--sidebar-bg);
+    }
+
+    .badge {
+      background-color: #f4f4f5;
+      padding: 1px 6px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+
+    /* Modal for API configuration */
+    .settings-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.4);
+      display: flex;
       align-items: center;
       justify-content: center;
-      flex: 1;
-      color: var(--text-dark);
-      text-align: center;
-      gap: 12px;
-      padding: 40px 20px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
     }
 
-    .no-sources-icon {
-      font-size: 40px;
-      opacity: 0.3;
+    .settings-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
     }
 
-    /* Welcome / Greeting Screen */
-    .welcome-container {
+    .settings-modal {
+      background-color: #ffffff;
+      border-radius: 12px;
+      width: 450px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      transform: translateY(12px);
+      transition: transform 0.2s ease;
+    }
+
+    .settings-modal-overlay.active .settings-modal {
+      transform: translateY(0);
+    }
+
+    .settings-modal-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .close-modal-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-muted);
+      line-height: 1;
+    }
+
+    .settings-modal-body {
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      text-align: center;
-      padding: 40px;
-      max-width: 600px;
-      margin: 0 auto;
       gap: 16px;
     }
 
-    .welcome-title {
-      font-family: var(--font-title);
-      font-size: 32px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #ffffff, #9ca3af);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .welcome-subtitle {
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-
-    .suggested-queries {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      width: 100%;
-      margin-top: 10px;
-    }
-
-    .suggested-btn {
-      background-color: var(--panel-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 12px;
-      color: var(--text-muted);
-      font-size: 12px;
-      text-align: left;
-      cursor: pointer;
-      transition: all var(--transition-fast);
+    .settings-group {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 8px;
     }
 
-    .suggested-btn:hover {
-      border-color: var(--primary);
-      color: var(--text-main);
-      background-color: var(--card-bg);
-      transform: translateY(-1px);
+    .settings-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
     }
 
-    .suggested-btn-tag {
-      font-size: 9px;
-      text-transform: uppercase;
+    .key-status {
+      font-size: 10px;
       font-weight: 700;
-      color: var(--primary);
-      letter-spacing: 0.5px;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .key-status.missing {
+      background-color: #fee2e2;
+      color: #ef4444;
+    }
+
+    .key-status.configured {
+      background-color: #dcfce7;
+      color: #10b981;
+    }
+
+    .key-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .key-input {
+      width: 100%;
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 40px 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .key-input:focus {
+      border-color: #a1a1aa;
+    }
+
+    .key-toggle {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .settings-help-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .settings-modal-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      background-color: #f9fafb;
+    }
+
+    .save-modal-btn {
+      background-color: #09090b;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .save-modal-btn:hover {
+      background-color: #27272a;
     }
 
     /* Markdown styling inside output bubble */
     .md-render h1, .md-render h2, .md-render h3 {
-      font-family: var(--font-title);
       color: var(--text-main);
       margin-top: 16px;
       margin-bottom: 8px;
       font-weight: 600;
     }
-    .md-render h1 { font-size: 18px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px; }
-    .md-render h2 { font-size: 15px; }
-    .md-render h3 { font-size: 13px; }
+    .md-render h1 { font-size: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; }
+    .md-render h2 { font-size: 17px; }
+    .md-render h3 { font-size: 15px; }
 
     .md-render p {
       margin-bottom: 12px;
@@ -692,19 +869,19 @@
     }
 
     .md-render code {
-      font-family: var(--font-mono);
-      background-color: rgba(255, 255, 255, 0.08);
+      font-family: monospace;
+      background-color: #f4f4f5;
       padding: 2px 5px;
       border-radius: 4px;
-      font-size: 12px;
-      color: #f43f5e;
+      font-size: 13px;
+      color: #e11d48;
     }
 
     .md-render pre {
-      background-color: rgba(0, 0, 0, 0.25);
+      background-color: #f4f4f5;
       border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 12px;
+      border-radius: 8px;
+      padding: 14px;
       overflow-x: auto;
       margin-bottom: 12px;
     }
@@ -713,76 +890,71 @@
       background: none;
       padding: 0;
       border-radius: 0;
-      color: #e2e8f0;
-      font-size: 12px;
+      color: var(--text-main);
+      font-size: 13px;
     }
 
     .md-render strong {
-      color: white;
+      color: var(--text-main);
       font-weight: 600;
     }
 
     .citation-link {
-      color: var(--primary);
+      color: #2563eb;
       text-decoration: none;
       font-weight: 500;
       display: inline-flex;
       align-items: center;
-      background-color: rgba(59, 130, 246, 0.08);
-      border: 1px solid rgba(59, 130, 246, 0.2);
+      background-color: #eff6ff;
+      border: 1px solid #bfdbfe;
       padding: 0px 5px;
       border-radius: 4px;
-      font-size: 11px;
+      font-size: 12px;
       margin: 0 2px;
-      font-family: var(--font-mono);
     }
     .citation-link:hover {
       text-decoration: underline;
-      background-color: rgba(59, 130, 246, 0.15);
+      background-color: #dbeafe;
     }
 
     .confidence-score-badge {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 3px 8px;
-      background-color: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: var(--accent-emerald);
-      border-radius: 4px;
-      font-size: 11px;
-      font-family: var(--font-mono);
+      padding: 4px 8px;
+      background-color: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #059669;
+      border-radius: 6px;
+      font-size: 12px;
       font-weight: 600;
       margin-top: 10px;
     }
 
-    /* Toolbar below streaming result */
     .bubble-actions {
       display: flex;
       justify-content: flex-end;
       gap: 8px;
-      margin-top: 8px;
+      margin-top: 12px;
     }
 
     .bubble-btn {
       background: none;
       border: 1px solid var(--border-color);
       color: var(--text-muted);
-      font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 4px;
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 6px;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 4px;
-      transition: all var(--transition-fast);
-      font-family: var(--font-title);
+      transition: background-color 0.2s, color 0.2s;
     }
 
     .bubble-btn:hover {
-      border-color: var(--text-dark);
+      background-color: var(--sidebar-bg);
       color: var(--text-main);
-      background-color: rgba(255, 255, 255, 0.02);
     }
 
     /* Skeleton Loading state */
@@ -796,7 +968,7 @@
 
     .skeleton-line {
       height: 14px;
-      background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.04) 75%);
+      background: linear-gradient(90deg, #f4f4f5 25%, #e4e4e7 50%, #f4f4f5 75%);
       background-size: 200% 100%;
       animation: pulse 1.5s infinite;
       border-radius: 4px;
@@ -814,12 +986,12 @@
 
     /* Alert and Error Banner */
     .alert-banner {
-      background-color: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #fca5a5;
-      padding: 12px 16px;
+      background-color: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      padding: 14px 18px;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 14px;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -833,19 +1005,19 @@
       font-weight: 600;
     }
     .alert-banner-btn {
-      background-color: var(--accent-red);
+      background-color: #ef4444;
       color: white;
       border: none;
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-size: 11px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
       font-weight: bold;
       cursor: pointer;
       width: fit-content;
-      transition: opacity var(--transition-fast);
+      transition: background-color 0.2s;
     }
     .alert-banner-btn:hover {
-      opacity: 0.9;
+      background-color: #dc2626;
     }
   </style>
 </head>
@@ -853,60 +1025,142 @@
 
   <!-- Top Header Navigation -->
   <header>
-    <div class="header-logo">
-      <div class="logo-icon">R</div>
-      <div class="logo-text">ResearchMind AI</div>
+    <div class="header-left">
+      <div class="figma-brand">
+        <!-- Figma Logo -->
+        <svg width="12" height="18" viewBox="0 0 12 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 6C4.65685 6 6 4.65685 6 3C6 1.34315 4.65685 0 3 0C1.34315 0 0 1.34315 0 3C0 4.65685 1.34315 6 3 6Z" fill="#F24E1E"/>
+          <path d="M9 6C10.6569 6 12 4.65685 12 3C12 1.34315 10.6569 0 9 0C7.34315 0 6 1.34315 6 3C6 4.65685 7.34315 6 9 6Z" fill="#A259FF"/>
+          <path d="M3 12C4.65685 12 6 10.6569 6 9C6 7.34315 4.65685 6 3 6C1.34315 6 0 7.34315 0 9C0 10.6569 1.34315 12 3 12Z" fill="#1ABC9C"/>
+          <path d="M3 18C4.65685 18 6 16.6569 6 15V12H3C1.34315 12 0 13.3431 0 15C0 16.6569 1.34315 18 3 18Z" fill="#0ACF83"/>
+          <path d="M9 12C10.6569 12 12 10.6569 12 9C12 7.34315 10.6569 6 9 6C7.34315 6 6 7.34315 6 9C6 10.6569 7.34315 12 9 12Z" fill="#18A0FB"/>
+        </svg>
+        <div class="ai-badge">AI</div>
+      </div>
     </div>
-    <div class="model-badge">Gemini 2.5 Flash</div>
+    <div class="header-center">
+      <div class="file-name" id="file-dropdown-trigger">
+        <span>AI Research Assistant</span>
+        <svg class="chevron-down" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="header-right">
+      <!-- Settings Icon Button -->
+      <button class="header-icon-btn" id="open-settings-btn" title="API Configuration">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+      <div class="user-avatar" title="Developer Profile">D</div>
+      <button class="share-btn">Share</button>
+    </div>
   </header>
 
   <div class="app-container">
     
-    <!-- Left Panel Section A: Sidebar with Config & History -->
+    <!-- Sidebar - Left panel -->
     <div class="sidebar">
-      <div class="sidebar-section">
-        <div class="sidebar-title">Research Queries</div>
-        <div class="history-list" id="history-list">
-          <!-- Populated by JS -->
-          <div class="no-history">No search history yet.</div>
+      <div class="sidebar-header">
+        <button class="new-topic-btn" id="new-topic-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>New Research Topic</span>
+        </button>
+        <div class="search-wrapper">
+          <span class="search-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+          <input type="text" class="search-input" id="search-topics" placeholder="Search topics..." />
         </div>
       </div>
       
-      <!-- API Key management area at bottom of sidebar -->
-      <div class="key-container">
-        <div class="key-label">
-          <span>GOOGLE API KEY</span>
-          <span id="key-status" class="key-status missing">Missing</span>
+      <div class="sidebar-content">
+        <div class="history-list" id="history-list">
+          <!-- Populated by JS -->
+          <div class="no-history">No research topics yet.</div>
         </div>
-        <div class="key-input-wrapper">
-          <input type="password" id="api-key-input" class="key-input" placeholder="Paste GOOGLE_API_KEY..." />
-          <button class="key-toggle" id="toggle-key-visibility" title="Toggle Visibility">👁️</button>
-        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <span class="version-text">AI Research Assistant v1.0</span>
       </div>
     </div>
 
-    <!-- Main Panels Layout -->
-    <div class="main-panels">
+    <!-- Main Workspace Layout -->
+    <div class="main-workspace">
       
+      <!-- Collapsible Sources Toggle (only shows when citations are present) -->
+      <button class="drawer-toggle-btn" id="drawer-toggle-btn" style="display: none;">
+        <span>Sources</span>
+        <span id="sources-count-badge" class="badge">0</span>
+      </button>
+
       <!-- Center Panel: Chat Area -->
       <div class="chat-panel">
         <div class="chat-messages" id="chat-messages">
           
-          <!-- Default Greeting/Welcome screen -->
+          <!-- Default Greeting/Welcome screen styled like Figma -->
           <div class="welcome-container" id="welcome-screen">
-            <h1 class="welcome-title">Autonomous Research Co-pilot</h1>
+            <div class="robot-badge">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                <circle cx="12" cy="5" r="2"></circle>
+                <path d="M12 7v4"></path>
+                <line x1="8" y1="16" x2="8" y2="16.01"></line>
+                <line x1="16" y1="16" x2="16" y2="16.01"></line>
+              </svg>
+            </div>
+            <h1 class="welcome-title">AI Research Assistant</h1>
             <p class="welcome-subtitle">
-              Ask deep research queries, synthesize insights across documents, and check real-time citation links. Powered by Google Gemini 2.5 Flash with low latency streaming.
+              Get help with your research questions, literature reviews, data analysis, and methodology guidance
             </p>
-            <div class="suggested-queries">
-              <button class="suggested-btn" onclick="runSuggested('What are the latest breakthroughs in protein folding prediction and how do they compare to AlphaFold2?')">
-                <span class="suggested-btn-tag">Structural Biology</span>
-                <span>Breakthroughs in protein folding vs AlphaFold 2</span>
-              </button>
-              <button class="suggested-btn" onclick="runSuggested('Compare transformer vs mamba architecture for long-context tasks')">
-                <span class="suggested-btn-tag">Machine Learning</span>
-                <span>Transformer vs Mamba for long-context</span>
-              </button>
+            
+            <div class="suggested-row">
+              <div class="suggested-card" onclick="runSuggested('Help me conduct a literature review on AlphaFold 3 applications in structural biology.')">
+                <div class="card-icon-wrapper">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </div>
+                <div class="card-content">
+                  <div class="card-title">Literature Review</div>
+                  <div class="card-desc">Help me conduct a literature review on...</div>
+                </div>
+              </div>
+              
+              <div class="suggested-card" onclick="runSuggested('Explain statistical methods for genomic sequence analysis.')">
+                <div class="card-icon-wrapper">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                  </svg>
+                </div>
+                <div class="card-content">
+                  <div class="card-title">Data Analysis</div>
+                  <div class="card-desc">Explain statistical methods for...</div>
+                </div>
+              </div>
+
+              <div class="suggested-card" onclick="runSuggested('What are the best practices for clinical trials data validation?')">
+                <div class="card-icon-wrapper">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
+                </div>
+                <div class="card-content">
+                  <div class="card-title">Research Methods</div>
+                  <div class="card-desc">What are the best practices for...</div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -915,32 +1169,29 @@
         <!-- Chat Input Field -->
         <div class="chat-input-container">
           <div class="input-wrapper">
-            <textarea id="query-input" class="query-textarea" placeholder="Ask a deep research question... (Press Enter to submit, Shift+Enter for newline)"></textarea>
-            <div class="input-footer">
-              <div class="shortcut-tip">
-                <span>⚡ Powered by Google Generative AI</span>
-              </div>
-              <button id="submit-btn" class="submit-btn" disabled>
-                <span>Research</span>
-                <span class="submit-icon">🔍</span>
-              </button>
-            </div>
+            <textarea id="query-input" class="query-textarea" placeholder="Ask a research question..."></textarea>
+            <button id="submit-btn" class="send-btn" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
           </div>
+          <div class="input-hint">Press Enter to send, Shift+Enter for new line</div>
         </div>
       </div>
 
-      <!-- Right Panel: Sources & Citations -->
-      <div class="sources-panel">
-        <div class="sources-header">
-          <div class="sources-title">
-            <span>📚 Grounding Sources</span>
-            <span id="sources-count" class="sources-count">0</span>
-          </div>
+      <!-- Right Panel: Sources & Citations Drawer -->
+      <div class="sources-drawer" id="sources-drawer">
+        <div class="drawer-header">
+          <h3>📚 Grounding Sources (<span id="sources-count">0</span>)</h3>
+          <button class="close-drawer-btn" id="close-drawer-btn">&times;</button>
         </div>
-        <div class="sources-list" id="sources-list">
-          <div class="no-sources" id="no-sources-view">
-            <div class="no-sources-icon">🌐</div>
-            <p>No active citations loaded. Submitting a research query will list matched URLs and verified sources here.</p>
+        <div class="drawer-content">
+          <div class="sources-list" id="sources-list">
+            <div class="no-sources" id="no-sources-view">
+              <p>No active citations loaded. Matched URLs and verified sources will list here.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -949,11 +1200,36 @@
 
   </div>
 
+  <!-- Settings Configuration Modal -->
+  <div class="settings-modal-overlay" id="settings-modal">
+    <div class="settings-modal">
+      <div class="settings-modal-header">
+        <h3>API Key Settings</h3>
+        <button class="close-modal-btn" id="close-settings-btn">&times;</button>
+      </div>
+      <div class="settings-modal-body">
+        <div class="settings-group">
+          <label for="api-key-input">
+            <span>GOOGLE API KEY</span>
+            <span id="key-status" class="key-status missing">Missing</span>
+          </label>
+          <div class="key-input-wrapper">
+            <input type="password" id="api-key-input" class="key-input" placeholder="Paste GOOGLE_API_KEY..." />
+            <button class="key-toggle" id="toggle-key-visibility" title="Toggle Visibility">👁️</button>
+          </div>
+          <p class="settings-help-text">Your API Key is kept locally in your browser storage and is used directly for streaming Gemini 2.5 Flash responses.</p>
+        </div>
+      </div>
+      <div class="settings-modal-footer">
+        <button class="save-modal-btn" id="save-settings-btn">Save & Close</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // App State
     let conversationHistory = [];
     let isGenerating = false;
-    let activeStreamController = null;
     let currentAssistantBubble = null;
     let currentResponseText = "";
     
@@ -969,6 +1245,20 @@
     const sourcesCount = document.getElementById("sources-count");
     const noSourcesView = document.getElementById("no-sources-view");
     const historyListContainer = document.getElementById("history-list");
+    const newTopicBtn = document.getElementById("new-topic-btn");
+    const searchTopics = document.getElementById("search-topics");
+
+    // Drawer elements
+    const sourcesDrawer = document.getElementById("sources-drawer");
+    const drawerToggleBtn = document.getElementById("drawer-toggle-btn");
+    const closeDrawerBtn = document.getElementById("close-drawer-btn");
+    const sourcesCountBadge = document.getElementById("sources-count-badge");
+
+    // Modal elements
+    const settingsModal = document.getElementById("settings-modal");
+    const openSettingsBtn = document.getElementById("open-settings-btn");
+    const closeSettingsBtn = document.getElementById("close-settings-btn");
+    const saveSettingsBtn = document.getElementById("save-settings-btn");
 
     // Load API Key from localStorage on initialization
     window.addEventListener("DOMContentLoaded", () => {
@@ -981,6 +1271,58 @@
       }
       loadHistoryFromStorage();
       adjustTextareaHeight();
+    });
+
+    // Handle Modal Triggers
+    openSettingsBtn.addEventListener("click", () => {
+      settingsModal.classList.add("active");
+    });
+    closeSettingsBtn.addEventListener("click", () => {
+      settingsModal.classList.remove("active");
+    });
+    saveSettingsBtn.addEventListener("click", () => {
+      settingsModal.classList.remove("active");
+    });
+    settingsModal.addEventListener("click", (e) => {
+      if (e.target === settingsModal) {
+        settingsModal.classList.remove("active");
+      }
+    });
+
+    // Handle Drawer triggers
+    drawerToggleBtn.addEventListener("click", () => {
+      sourcesDrawer.classList.toggle("active");
+    });
+    closeDrawerBtn.addEventListener("click", () => {
+      sourcesDrawer.classList.remove("active");
+    });
+
+    // Clear and start new topic
+    newTopicBtn.addEventListener("click", () => {
+      welcomeScreen.style.display = "flex";
+      chatMessages.innerHTML = "";
+      chatMessages.appendChild(welcomeScreen);
+      resetSourcesView();
+      queryInput.value = "";
+      adjustTextareaHeight();
+      toggleSubmitButton();
+      
+      const items = historyListContainer.querySelectorAll(".history-item");
+      items.forEach(btn => btn.classList.remove("active"));
+    });
+
+    // Filter History Items
+    searchTopics.addEventListener("input", (e) => {
+      const q = e.target.value.toLowerCase();
+      const items = historyListContainer.querySelectorAll(".history-item");
+      items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        if (text.includes(q)) {
+          item.style.display = "flex";
+        } else {
+          item.style.display = "none";
+        }
+      });
     });
 
     // Handle Input States
@@ -1015,8 +1357,9 @@
     });
 
     function adjustTextareaHeight() {
-      queryInput.style.height = "auto";
-      queryInput.style.height = (queryInput.scrollHeight) + "px";
+      queryInput.style.height = "24px";
+      const newHeight = Math.min(queryInput.scrollHeight, 120);
+      queryInput.style.height = newHeight + "px";
     }
 
     function toggleSubmitButton() {
@@ -1048,26 +1391,25 @@
     function renderMarkdown(text) {
       if (!text) return "";
       
-      // Escape HTML to prevent XSS (except for elements we generate)
       let html = text
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;");
       
-      // Handle fenced code blocks
+      // Fenced code blocks
       html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
         return `<pre><code>${code.trim()}</code></pre>`;
       });
       
-      // Handle inline code
+      // Inline code
       html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
       
-      // Handle headers
+      // Headers
       html = html.replace(/^### (.*$)/gim, "<h3>$1</h3>");
       html = html.replace(/^## (.*$)/gim, "<h2>$1</h2>");
       html = html.replace(/^# (.*$)/gim, "<h1>$1</h1>");
       
-      // Handle bullet lists
+      // Bullet lists
       const lines = html.split("\n");
       let inList = false;
       let resultLines = [];
@@ -1093,14 +1435,14 @@
       }
       html = resultLines.join("\n");
       
-      // Handle bold and italic
+      // Bold and italic
       html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
       html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
       
-      // Handle links
+      // Links
       html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" class="citation-link">$1</a>');
       
-      // Process paragraphs
+      // Paragraphs
       const paragraphs = html.split(/\n\n+/);
       html = paragraphs.map(p => {
         const trimmed = p.trim();
@@ -1119,10 +1461,8 @@
       const seenUrls = new Set();
       const sources = [];
       
-      // Match markdown links: [Title](URL)
       const mdLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
       let match;
-      // Reset index
       mdLinkRegex.lastIndex = 0;
       while ((match = mdLinkRegex.exec(text)) !== null) {
         const title = match[1].trim();
@@ -1133,7 +1473,6 @@
         }
       }
       
-      // Match raw URLs that are not wrapped in brackets/parentheses
       const rawUrlRegex = /(https?:\/\/[^\s\)\"\'\]]+)/g;
       rawUrlRegex.lastIndex = 0;
       while ((match = rawUrlRegex.exec(text)) !== null) {
@@ -1149,10 +1488,11 @@
         }
       }
 
-      // Render cards in right panel
       if (sources.length > 0) {
         noSourcesView.style.display = "none";
         sourcesCount.textContent = sources.length;
+        sourcesCountBadge.textContent = sources.length;
+        drawerToggleBtn.style.display = "flex";
         
         let sourcesHTML = "";
         sources.forEach((source, idx) => {
@@ -1179,7 +1519,10 @@
 
     function resetSourcesView() {
       sourcesCount.textContent = "0";
-      noSourcesView.style.display = "flex";
+      sourcesCountBadge.textContent = "0";
+      drawerToggleBtn.style.display = "none";
+      sourcesDrawer.classList.remove("active");
+      noSourcesView.style.display = "block";
       sourcesList.innerHTML = "";
       sourcesList.appendChild(noSourcesView);
     }
@@ -1194,26 +1537,21 @@
       isGenerating = true;
       toggleSubmitButton();
       
-      // Hide welcome screen if showing
       if (welcomeScreen) {
         welcomeScreen.style.display = "none";
       }
 
-      // Add User Message
       appendMessage("user", query);
       
-      // Clear input
       queryInput.value = "";
       adjustTextareaHeight();
 
-      // Create Assistant Bubble and placeholder
-      const bubbleId = appendMessage("assistant", "", true); // isSkeleton = true
+      const bubbleId = appendMessage("assistant", "", true);
       currentAssistantBubble = document.getElementById(bubbleId);
       currentResponseText = "";
       
       resetSourcesView();
 
-      // Initiate fetch
       try {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?key=${key}&alt=sse`;
         
@@ -1251,8 +1589,6 @@
         const reader = response.body.getReader();
         const decoder = new TextDecoder("utf-8");
         let buffer = "";
-
-        // Remove skeleton loader upon receiving first bytes
         let firstTokenReceived = false;
 
         while (true) {
@@ -1261,7 +1597,7 @@
           
           buffer += decoder.decode(value, { stream: true });
           let lines = buffer.split("\n");
-          buffer = lines.pop(); // Hold onto incomplete last line
+          buffer = lines.pop();
           
           for (const line of lines) {
             const trimmedLine = line.trim();
@@ -1278,7 +1614,6 @@
                 if (chunkText) {
                   if (!firstTokenReceived) {
                     firstTokenReceived = true;
-                    // Remove skeleton loader UI
                     currentAssistantBubble.innerHTML = `<div class="message-bubble md-render"></div>`;
                   }
                   
@@ -1292,7 +1627,6 @@
           }
         }
         
-        // Handle trailing buffer
         if (buffer.trim().startsWith("data: ")) {
           try {
             const dataStr = buffer.trim().substring(6).trim();
@@ -1305,7 +1639,6 @@
           } catch(e) {}
         }
 
-        // Streaming complete
         finishStreaming(query, currentResponseText);
 
       } catch (err) {
@@ -1317,11 +1650,9 @@
       }
     }
 
-    // Update the Assistant text bubble and run the markdown + citation parsers
     function updateAssistantBubble(text) {
       const bubble = currentAssistantBubble.querySelector(".message-bubble");
       if (bubble) {
-        // Parse confidence score if exists in text
         let confidenceHTML = "";
         const confMatch = text.match(/confidence(?:\s+score)?:\s*(\d+)%/i);
         if (confMatch) {
@@ -1332,18 +1663,12 @@
           `;
         }
         
-        // Render Markdown content
         bubble.innerHTML = renderMarkdown(text) + confidenceHTML;
-        
-        // Populate sources panel
         parseAndDisplaySources(text);
-        
-        // Autoscroll
         chatMessages.scrollTop = chatMessages.scrollHeight;
       }
     }
 
-    // Finalize bubble with toolbar actions
     function finishStreaming(query, responseText) {
       if (!currentAssistantBubble) return;
       
@@ -1362,21 +1687,23 @@
       actionsDiv.appendChild(copyBtn);
       currentAssistantBubble.appendChild(actionsDiv);
 
-      // Save to history list
       saveQueryToHistory(query, responseText);
+      
+      // Auto open sources drawer on stream complete if sources exist
+      if (parseInt(sourcesCount.textContent) > 0) {
+        sourcesDrawer.classList.add("active");
+      }
     }
 
-    // Show clean errors inside Assistant Bubble
     function showErrorBubble(errorMsg) {
       if (!currentAssistantBubble) return;
       
-      // Determine error type for contextual suggestions
       let customHeading = "Connection Failed";
       let actionSuggestion = "Ensure your network is active and Tavily/Google configurations are set.";
       
       if (errorMsg.includes("API_KEY_INVALID") || errorMsg.includes("API key not valid")) {
         customHeading = "Invalid API Key Detected";
-        actionSuggestion = "Please check that your GOOGLE_API_KEY in the sidebar is valid and starts with 'AIzaSy'.";
+        actionSuggestion = "Please click the Settings icon in the header to verify your GOOGLE_API_KEY is correct.";
       }
 
       currentAssistantBubble.innerHTML = `
@@ -1385,19 +1712,17 @@
             ⚠️ <strong>${customHeading}</strong>
           </div>
           <p>${errorMsg}</p>
-          <p style="font-size: 11px; opacity: 0.8;">${actionSuggestion}</p>
-          <button class="alert-banner-btn" onclick="retryLastQuery()">Retry Research</button>
+          <p style="font-size: 12px; opacity: 0.9; margin-top: 4px;">${actionSuggestion}</p>
+          <button class="alert-banner-btn" style="margin-top: 8px;" onclick="retryLastQuery()">Retry Research</button>
         </div>
       `;
       resetSourcesView();
     }
 
     function retryLastQuery() {
-      // Find last user query
       const userMessages = chatMessages.querySelectorAll(".message.user .message-bubble");
       if (userMessages.length > 0) {
         const lastQuery = userMessages[userMessages.length - 1].innerText;
-        // Clean messages and rerun
         currentAssistantBubble.remove();
         isGenerating = false;
         queryInput.value = lastQuery;
@@ -1405,20 +1730,18 @@
       }
     }
 
-    // UI helper: Add bubbles to chat
     function appendMessage(role, text, isSkeleton = false) {
       const bubbleId = "bubble-" + Date.now();
       const messageDiv = document.createElement("div");
       messageDiv.className = `message ${role}`;
       messageDiv.id = bubbleId;
 
-      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const roleName = role === "user" ? "You" : "Research Assistant";
       
       let innerHTML = "";
       if (isSkeleton) {
         innerHTML = `
-          <div class="message-info">${roleName} • ${time}</div>
+          <div class="message-info">${roleName}</div>
           <div class="message-bubble" style="width: 100%;">
             <div class="skeleton">
               <div class="skeleton-line h"></div>
@@ -1430,24 +1753,19 @@
         `;
       } else {
         innerHTML = `
-          <div class="message-info">${roleName} • ${time}</div>
+          <div class="message-info">${roleName}</div>
           <div class="message-bubble">${role === "user" ? text : renderMarkdown(text)}</div>
         `;
       }
 
       messageDiv.innerHTML = innerHTML;
       chatMessages.appendChild(messageDiv);
-      
-      // Scroll to bottom
       chatMessages.scrollTop = chatMessages.scrollHeight;
       return bubbleId;
     }
 
-    // Save and load conversation history from localStorage
     function saveQueryToHistory(query, responseText) {
       let history = JSON.parse(localStorage.getItem("research_history") || "[]");
-      
-      // Prevent duplicates
       history = history.filter(item => item.query !== query);
       
       history.unshift({
@@ -1456,8 +1774,7 @@
         timestamp: Date.now()
       });
       
-      // Cap at 10 items
-      if (history.length > 10) history.pop();
+      if (history.length > 25) history.pop();
       
       localStorage.setItem("research_history", JSON.stringify(history));
       loadHistoryFromStorage();
@@ -1466,7 +1783,7 @@
     function loadHistoryFromStorage() {
       const history = JSON.parse(localStorage.getItem("research_history") || "[]");
       if (history.length === 0) {
-        historyListContainer.innerHTML = '<div class="no-history">No search history yet.</div>';
+        historyListContainer.innerHTML = '<div class="no-history">No research topics yet.</div>';
         return;
       }
 
@@ -1474,7 +1791,11 @@
       history.forEach((item, idx) => {
         historyHTML += `
           <button class="history-item" onclick="loadSavedQuery(${idx})" title="${item.query}">
-            <span class="history-item-icon">📝</span>
+            <span class="history-item-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </span>
             <span>${item.query}</span>
           </button>
         `;
@@ -1482,32 +1803,26 @@
       historyListContainer.innerHTML = historyHTML;
     }
 
-    // Load saved conversation back into chat view
     function loadSavedQuery(index) {
       const history = JSON.parse(localStorage.getItem("research_history") || "[]");
       const item = history[index];
       if (!item) return;
 
-      // Deactivate other active history classes
       const items = historyListContainer.querySelectorAll(".history-item");
       items.forEach((btn, idx) => {
         if (idx === index) btn.classList.add("active");
         else btn.classList.remove("active");
       });
 
-      // Hide welcome screen
       welcomeScreen.style.display = "none";
       chatMessages.innerHTML = "";
 
-      // Append user query bubble
       appendMessage("user", item.query);
 
-      // Append assistant answer bubble
       const bubbleId = appendMessage("assistant", item.answer);
       currentAssistantBubble = document.getElementById(bubbleId);
       currentResponseText = item.answer;
       
-      // Add bubble action copy button
       const actionsDiv = document.createElement("div");
       actionsDiv.className = "bubble-actions";
       const copyBtn = document.createElement("button");
@@ -1521,7 +1836,6 @@
       actionsDiv.appendChild(copyBtn);
       currentAssistantBubble.appendChild(actionsDiv);
 
-      // Parse confidence score if exists
       let confidenceHTML = "";
       const confMatch = item.answer.match(/confidence(?:\s+score)?:\s*(\d+)%/i);
       if (confMatch) {
@@ -1534,10 +1848,8 @@
         bubble.appendChild(document.createRange().createContextualFragment(confidenceHTML));
       }
 
-      // Populate sources panel
       parseAndDisplaySources(item.answer);
 
-      // Populate textarea input in case they want to run it again
       queryInput.value = item.query;
       adjustTextareaHeight();
       toggleSubmitButton();
